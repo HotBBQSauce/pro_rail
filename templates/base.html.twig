@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ProRail App{% endblock %}</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        header {
+            background-color: #e0e0e0;
+            color: #333;
+            padding: 1em 0;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 2em 0;
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 0.5em;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2em;
+            background-color: white;
+        }
+        th, td {
+            padding: 1em;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        tr:hover {
+            background-color: #f0f0f0;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    {% block stylesheets %}
+    {% endblock %}
+    {% block javascripts %}
+    {% endblock %}
+</head>
+<body>
+<header>
+    <h1>ProRail App</h1>
+</header>
+
+<div class="container">
+    {% block body %}
+        {% if data is not empty %}
+            <table>
+                <thead>
+                <tr>
+                    <th>Naam</th>
+                    <th>ID</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in data %}
+                    {% set iriParts = item.IRI|split('/') %}
+                    {% set id = iriParts|last %}
+                    <tr>
+                        <td><strong>{{ item.naam }}</strong></td>
+                        <td><a href="{{ path('concept_detail', {'identifier': id }) }}">{{ id }}</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No data found.</p>
+        {% endif %}
+    {% endblock %}
+</div>
+</body>
+</html>

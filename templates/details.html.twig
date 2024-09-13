@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Concept Detail - {{ concept.naam }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        header {
+            background-color: #e0e0e0;
+            padding: 1em 0;
+            text-align: center;
+        }
+        h1 {
+            font-size: 1.8em;
+            margin-bottom: 0.5em;
+        }
+        h2 {
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 0.5em;
+            margin-bottom: 1em;
+            font-size: 1.4em;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: white;
+            padding: 0.5em;
+            border: 1px solid #ddd;
+            margin-bottom: 0.5em;
+            border-radius: 4px;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        p {
+            margin-bottom: 1em;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 2em 0;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Concept: {{ concept.naam }}</h1>
+</header>
+<div class="container">
+    <p><strong>IRI:</strong> {{ concept.IRI }}</p>
+    <p><strong>Omschrijving:</strong> {{ concept.omschrijving ?: 'Geen omschrijving beschikbaar' }}</p>
+
+    <h2>Meta-eigenschappen</h2>
+    {% if concept['meta-eigenschappen'] is not empty %}
+        <ul>
+            {% for eigenschap in concept['meta-eigenschappen'] %}
+                <li>
+                    <strong>{{ eigenschap['meta-eigenschap'].IRI }}:</strong> {{ eigenschap.waarde }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Geen meta-eigenschappen beschikbaar.</p>
+    {% endif %}
+
+    <h2>Supertypen</h2>
+    {% if concept.supertypen is not empty %}
+        <ul>
+            {% for supertype in concept.supertypen %}
+                <li><a href="{{ path('concept_detail', { 'identifier': supertype.IRI|split('/')|last }) }}">{{ supertype.naam }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Geen supertypen beschikbaar.</p>
+    {% endif %}
+
+    <h2>Subtypen</h2>
+    {% if concept.subtypen is not empty %}
+        <ul>
+            {% for subtype in concept.subtypen %}
+                <li><a href="{{ path('concept_detail', { 'identifier': subtype.IRI|split('/')|last }) }}">{{ subtype.naam }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Geen subtypen beschikbaar.</p>
+    {% endif %}
+
+    <h2>Domein van Eigenschappen</h2>
+    {% if concept['domein van eigenschappen'] is not empty %}
+        <ul>
+            {% for eigenschap in concept['domein van eigenschappen'] %}
+                <li>
+                    <strong>{{ eigenschap.naam }}:</strong>
+                    Minimum: {{ eigenschap['minimum aantal']|default('Niet gespecificeerd') }}, Maximum: {{ eigenschap['maximum aantal']|default('Niet gespecificeerd') }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Geen domein van eigenschappen beschikbaar.</p>
+    {% endif %}
+
+    <h2>Bereik van Eigenschappen</h2>
+    {% if concept['bereik van eigenschappen'] is not empty %}
+        <ul>
+            {% for bereik in concept['bereik van eigenschappen'] %}
+                <li>
+                    <strong>{{ bereik.naam }}:</strong> {{ bereik.IRI }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Geen bereik van eigenschappen beschikbaar.</p>
+    {% endif %}
+
+    <a href="{{ path('home') }}">Terug naar lijst</a>
+</div>
+</body>
+</html>
