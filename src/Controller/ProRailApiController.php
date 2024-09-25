@@ -5,88 +5,50 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
+use App\Service\ProRailApiClient;
 
 class ProRailApiController extends AbstractController
 {
-    #[Route('/api/pro-rail', methods: ['GET'])]
-    public function getData(LoggerInterface $logger): Response
+    private ProRailApiClient $proRailApiClient;
+    private LoggerInterface $logger;
+
+    public function __construct(ProRailApiClient $proRailApiClient, LoggerInterface $logger)
     {
-        $client = HttpClient::create();
-        $apiKey = $_SERVER['API_KEY'];
-        $base_url = $_SERVER['BASE_URL'];
+        $this->proRailApiClient = $proRailApiClient;
+        $this->logger = $logger;
+    }
 
+    #[Route('/api/pro-rail', methods: ['GET'])]
+    public function getData(): Response
+    {
         try {
-            $response = $client->request(
-                'GET',
-                $base_url,
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Authorization' => $apiKey
-                    ],
-                ]
-            );
+            // Fetch data from the ProRail API using the service
+            $content = $this->proRailApiClient->getConceptList();
 
-            $statusCode = $response->getStatusCode();
-            $content = $response->toArray();
-
-            // Log de statuscode voor debugging
-            $logger->info('Status code for ProRail API fetch: ' . $statusCode);
-
-            if ($statusCode !== 200) {
-                $logger->error('Error fetching data from ProRail API.');
-                return new Response('Error fetching data', $statusCode);
-            }
-
+            // Return the data as JSON
             return $this->json($content);
         } catch (\Exception $e) {
-            // Log de uitzondering
-            $logger->error('Exception occurred while fetching data: ' . $e->getMessage());
+            // Log any exceptions that occur
+            $this->logger->error('Exception occurred while fetching data: ' . $e->getMessage());
             return new Response('Internal Server Error', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     #[Route('/api/pro-rail/{identifier}', methods: ['GET'])]
-    public function getConceptDetails(string $identifier, LoggerInterface $logger): Response
+    public function getConceptDetails(string $identifier): Response
     {
-        $client = HttpClient::create();
-        $apiKey = $_SERVER['API_KEY'];
-        $base_url = $_SERVER['BASE_URL'];
-
-        // Constructeer de volledige URL met de base URL en identifier
-        $request_url = $base_url . rawurlencode('https://otl.prorail.nl/concept/' . $identifier);
-
         try {
-            $response = $client->request(
-                'GET',
-                $request_url,
-                [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Authorization' => $apiKey,
-                    ],
-                ]
-            );
+            // Fetch specific concept details using the service
+            $content = $this->proRailApiClient->getConceptDetails($identifier);
 
-            $statusCode = $response->getStatusCode();
-            $content = $response->toArray();
-
-            // Log de statuscode voor debugging
-            $logger->info('Status code for concept details fetch: ' . $statusCode);
-
-            if ($statusCode !== 200) {
-                $logger->error('Error fetching concept details for identifier: ' . $identifier);
-                return new Response('Error fetching concept details', $statusCode);
-            }
-
+            // Return the data as JSON
             return $this->json($content);
         } catch (\Exception $e) {
-            // Log de uitzondering
-            $logger->error('Exception occurred while fetching concept details: ' . $e->getMessage());
+            // Log any exceptions that occur
+            $this->logger->error('Exception occurred while fetching concept details: ' . $e->getMessage());
             return new Response('Internal Server Error', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

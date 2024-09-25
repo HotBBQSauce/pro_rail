@@ -99,28 +99,36 @@
     {% endif %}
 
     <h2>Domein van Eigenschappen</h2>
-    {% if concept['domein van eigenschappen'] is not empty %}
-        <ul>
-            {% for eigenschap in concept['domein van eigenschappen'] %}
-                <li>
-                    <strong>{{ eigenschap.naam }}:</strong>
-                    Minimum: {{ eigenschap['minimum aantal']|default('Niet gespecificeerd') }}, Maximum: {{ eigenschap['maximum aantal']|default('Niet gespecificeerd') }}
-                </li>
-            {% endfor %}
-        </ul>
+    {% if 'domein van eigenschappen' in concept %}
+        {% if concept['domein van eigenschappen'] is not empty %}
+            <ul>
+                {% for eigenschap in concept['domein van eigenschappen'] %}
+                    <li>
+                        <strong>{{ eigenschap.naam }}:</strong>
+                        Minimum: {{ eigenschap['minimum aantal']|default('Niet gespecificeerd') }}, Maximum: {{ eigenschap['maximum aantal']|default('Niet gespecificeerd') }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Geen domein van eigenschappen beschikbaar.</p>
+        {% endif %}
     {% else %}
         <p>Geen domein van eigenschappen beschikbaar.</p>
     {% endif %}
 
     <h2>Bereik van Eigenschappen</h2>
-    {% if concept['bereik van eigenschappen'] is not empty %}
-        <ul>
-            {% for bereik in concept['bereik van eigenschappen'] %}
-                <li>
-                    <strong>{{ bereik.naam }}:</strong> {{ bereik.IRI }}
-                </li>
-            {% endfor %}
-        </ul>
+    {% if 'bereik van eigenschappen' in concept %}
+        {% if concept['bereik van eigenschappen'] is not empty %}
+            <ul>
+                {% for bereik in concept['bereik van eigenschappen'] %}
+                    <li>
+                        <strong>{{ bereik.naam }}:</strong> {{ bereik.IRI }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Geen bereik van eigenschappen beschikbaar.</p>
+        {% endif %}
     {% else %}
         <p>Geen bereik van eigenschappen beschikbaar.</p>
     {% endif %}
